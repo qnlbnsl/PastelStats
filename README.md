@@ -1,6 +1,6 @@
 # Pastel Stats
 
-An [Omarchy](https://omarchy.org/) bar widget that shows CPU and GPU usage, temperatures, and total power draw, color-coded in pastels so you can tell at a glance when something is working hard.
+An [Omarchy](https://omarchy.org/) bar widget that shows CPU and GPU usage, temperatures, and power draw, color-coded in pastels so you can tell at a glance when something is working hard.
 
 ![Pastel Stats](preview.png)
 
@@ -8,7 +8,7 @@ An [Omarchy](https://omarchy.org/) bar widget that shows CPU and GPU usage, temp
 
 - CPU usage, temperature, and package power
 - GPU usage, temperature, and power for NVIDIA and AMD cards
-- Combined CPU + GPU wattage
+- Separate CPU and GPU wattage on the bar
 - Each number shifts from green to yellow to peach to pink-red as it climbs
 - Anything your hardware can't report is left out instead of showing zeros
 - Hover for a per-device breakdown, click to open btop
@@ -34,9 +34,10 @@ This takes the widget off the bar and deletes the plugin folder. The plugin only
 | Usage % | under 50 | 50+ | 80+ | 90+ |
 | CPU temp | under 70° | 70+ | 85+ | 95+ |
 | GPU temp | under 60° | 60+ | 75+ | 83+ |
-| Total watts | under 150 | 150+ | 300+ | 450+ |
+| CPU watts | under 60 | 60+ | 100+ | 130+ |
+| GPU watts | under 150 | 150+ | 250+ | 320+ |
 
-Temperature thresholds can be changed on the widget's entry in `~/.config/omarchy/shell.json`:
+Temperature and wattage thresholds can be changed on the widget's entry in `~/.config/omarchy/shell.json`:
 
 ```json
 {
@@ -47,7 +48,13 @@ Temperature thresholds can be changed on the widget's entry in `~/.config/omarch
   "cpuTempCritical": 95,
   "gpuTempWarm": 60,
   "gpuTempHot": 75,
-  "gpuTempCritical": 83
+  "gpuTempCritical": 83,
+  "cpuWattsWarm": 60,
+  "cpuWattsHot": 100,
+  "cpuWattsCritical": 130,
+  "gpuWattsWarm": 150,
+  "gpuWattsHot": 250,
+  "gpuWattsCritical": 320
 }
 ```
 
@@ -69,7 +76,7 @@ Intel GPUs are not supported yet, since their usage counters need root. The GPU 
 
 ### CPU wattage
 
-Most kernels only let root read RAPL energy counters, so CPU watts are hidden by default and the total shows GPU power only. To show CPU power, add a udev rule that makes the counter readable:
+Most kernels only let root read RAPL energy counters, so CPU watts are hidden by default. To show CPU power, add a udev rule that makes the counter readable:
 
 ```bash
 echo 'ACTION=="add", SUBSYSTEM=="powercap", KERNEL=="intel-rapl:*", RUN+="/usr/bin/chmod 0444 /sys%p/energy_uj"' \

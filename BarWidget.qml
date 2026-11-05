@@ -17,8 +17,6 @@ BarWidget {
   property string cpuTemp: "-"
   property string gpuTemp: "-"
   readonly property bool hasGpu: gpu !== "-" || gpuTemp !== "-"
-  readonly property bool hasWatts: cpuWatts !== "-" || gpuWatts !== "-"
-  readonly property int totalWatts: (cpuWatts !== "-" ? parseInt(cpuWatts) : 0) + (gpuWatts !== "-" ? parseInt(gpuWatts) : 0)
   property bool ready: false
 
   implicitWidth: button.implicitWidth
@@ -68,14 +66,15 @@ BarWidget {
     function part(text, color) { return colored ? paint(text, color) : text }
     var cpuPart = "CPU " + part(cpu + "%", tint(cpu, 50, 80, 90))
     if (cpuTemp !== "-") cpuPart += " " + part(cpuTemp + "°", tint(cpuTemp, setting("cpuTempWarm", 70), setting("cpuTempHot", 85), setting("cpuTempCritical", 95)))
+    if (cpuWatts !== "-") cpuPart += " " + part(cpuWatts + "W", tint(cpuWatts, setting("cpuWattsWarm", 60), setting("cpuWattsHot", 100), setting("cpuWattsCritical", 130)))
     var out = [cpuPart]
     if (hasGpu) {
       var gpuPart = "GPU"
       if (gpu !== "-") gpuPart += " " + part(gpu + "%", tint(gpu, 50, 80, 90))
       if (gpuTemp !== "-") gpuPart += " " + part(gpuTemp + "°", tint(gpuTemp, setting("gpuTempWarm", 60), setting("gpuTempHot", 75), setting("gpuTempCritical", 83)))
+      if (gpuWatts !== "-") gpuPart += " " + part(gpuWatts + "W", tint(gpuWatts, setting("gpuWattsWarm", 150), setting("gpuWattsHot", 250), setting("gpuWattsCritical", 320)))
       out.push(gpuPart)
     }
-    if (hasWatts) out.push(part(totalWatts + "W", tint(totalWatts, 150, 300, 450)))
     return out.join(" · ")
   }
 
